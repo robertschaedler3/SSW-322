@@ -41,7 +41,7 @@ public class SimpleMazeGame {
 	/**
 	 * Creates a small maze.
 	 */
-	public static Maze createMaze() {
+	public Maze createMaze() {
 
 		Maze maze = new Maze();
 
@@ -65,7 +65,7 @@ public class SimpleMazeGame {
 		return maze;
 	}
 
-	public static Maze loadMaze(final String path) {
+	public Maze loadMaze(final String path) {
 		Maze maze = new Maze();
 		Scanner s = null;
 		try {
@@ -81,45 +81,48 @@ public class SimpleMazeGame {
 
 		LinkedList<String[]> roomConfigs = new LinkedList<>();
 
+		// Read rooms and doors from .maze file
 		while (s.hasNextLine()) {
 			line = s.nextLine();
-			String[] args = line.split(" ");
+			String[] lineVals = line.split(" ");
 
-			if (args[0].equals("room")) {
-				roomConfigs.add(args);
-				Room room = new Room(Integer.parseInt(args[1]));
+			if (lineVals[0].equals("room")) {
+				roomConfigs.add(lineVals);
+				Room room = new Room(Integer.parseInt(lineVals[1]));
 
 				rooms.add(room);
 				maze.addRoom(room);
-			} else if (args[0].equals("door")) {
-				int r1 = Integer.parseInt(args[2]);
-				int r2 = Integer.parseInt(args[3]);
+			} else if (lineVals[0].equals("door")) {
+				int r1 = Integer.parseInt(lineVals[2]);
+				int r2 = Integer.parseInt(lineVals[3]);
 				Door door = new Door(rooms.get(r1), rooms.get(r2));
 
-				door.setOpen(args[4].equals("open"));
+				door.setOpen(lineVals[4].equals("open"));
 				doors.add(door);
 			}
 		}
 		s.close();
 
-		int numRooms = rooms.size();
 		Direction[] directions = { Direction.North, Direction.South, Direction.East, Direction.West };
-		for (int roomId = 0; roomId < numRooms; roomId++) {
+
+		for (int roomId = 0; roomId < rooms.size(); roomId++) {
 			Room room = rooms.get(roomId);
 			String[] roomConf = roomConfigs.get(roomId);
 
+			String conf;
+			MapSite site;
 			for (int confId = 2; confId < 6; confId++) {
-				String conf = roomConf[confId];
-				MapSite site = null;
+				conf = roomConf[confId];
 
-				if (conf.equals("wall")) {
+				if (conf.equals("wall")) { // if the room has a wall
 					site = new Wall();
-				} else if (conf.startsWith("d")) {
+				} else if (conf.startsWith("d")) { // if the room has a door
 					site = doors.get(Integer.parseInt(conf.substring(1)));
-				} else {
+				} else { // two rooms are connected
 					site = rooms.get(Integer.parseInt(conf));
 				}
 
+				// set the new side
 				room.setSide(directions[confId - 2], site);
 			}
 		}
@@ -133,10 +136,11 @@ public class SimpleMazeGame {
 		}
 
 		Maze maze = null;
+		SimpleMazeGame simpleMaze = new SimpleMazeGame();
 		if (args.length == 1) {
-			maze = loadMaze(args[0]);
+			maze = simpleMaze.loadMaze(args[0]);
 		} else {
-			maze = createMaze();
+			maze = simpleMaze.createMaze();
 		}
 		MazeViewer viewer = new MazeViewer(maze);
 		viewer.run();
