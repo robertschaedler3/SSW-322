@@ -38,111 +38,114 @@ import java.util.*;
  * @since 1.0
  */
 public class SimpleMazeGame {
-	/**
-	 * Creates a small maze.
-	 */
-	public Maze createMaze() {
+    /**
+     * Creates a small maze.
+     */
+    public Maze createMaze() {
 
-		Maze maze = new Maze();
+        Maze maze = new Maze();
 
-		Room r1 = new Room(0);
-		Room r2 = new Room(1);
-		Door d = new Door(r1, r2);
+        Room r1 = new Room(0);
+        Room r2 = new Room(1);
+        Door d = new Door(r1, r2);
 
-		maze.addRoom(r1);
-		maze.addRoom(r2);
+        maze.addRoom(r1);
+        maze.addRoom(r2);
 
-		r1.setSide(Direction.North, new Wall());
-		r1.setSide(Direction.South, new Wall());
-		r1.setSide(Direction.West, new Wall());
-		r1.setSide(Direction.East, d);
+        r1.setSide(Direction.North, new Wall());
+        r1.setSide(Direction.South, new Wall());
+        r1.setSide(Direction.West, new Wall());
+        r1.setSide(Direction.East, d);
 
-		r2.setSide(Direction.South, new Wall());
-		r2.setSide(Direction.North, new Wall());
-		r2.setSide(Direction.East, new Wall());
-		r2.setSide(Direction.West, d);
+        r2.setSide(Direction.South, new Wall());
+        r2.setSide(Direction.North, new Wall());
+        r2.setSide(Direction.East, new Wall());
+        r2.setSide(Direction.West, d);
 
-		return maze;
-	}
+        maze.setCurrentRoom(0);
+        return maze;
+    }
 
-	public Maze loadMaze(final String path) {
-		Maze maze = new Maze();
-		Scanner s = null;
-		try {
-			s = new Scanner(new File(path));
-		} catch (FileNotFoundException e) {
-			System.err.println(e);
-			System.exit(1);
-		}
+    public Maze loadMaze(final String path) {
+        Maze maze = new Maze();
+        Scanner s = null;
+        try {
+            s = new Scanner(new File(path));
+        } catch (FileNotFoundException e) {
+            System.err.println(e);
+            System.exit(1);
+        }
 
-		String line;
-		LinkedList<Room> rooms = new LinkedList<>();
-		LinkedList<Door> doors = new LinkedList<>();
+        String line;
+        LinkedList<Room> rooms = new LinkedList<>();
+        LinkedList<Door> doors = new LinkedList<>();
 
-		LinkedList<String[]> roomConfigs = new LinkedList<>();
+        LinkedList<String[]> roomConfigs = new LinkedList<>();
 
-		// Read rooms and doors from .maze file
-		while (s.hasNextLine()) {
-			line = s.nextLine();
-			String[] lineVals = line.split(" ");
+        // Read rooms and doors from .maze file
+        while (s.hasNextLine()) {
+            line = s.nextLine();
+            String[] lineVals = line.split(" ");
 
-			if (lineVals[0].equals("room")) {
-				roomConfigs.add(lineVals);
-				Room room = new Room(Integer.parseInt(lineVals[1]));
+            if (lineVals[0].equals("room")) {
+                roomConfigs.add(lineVals);
+                Room room = new Room(Integer.parseInt(lineVals[1]));
 
-				rooms.add(room);
-				maze.addRoom(room);
-			} else if (lineVals[0].equals("door")) {
-				int r1 = Integer.parseInt(lineVals[2]);
-				int r2 = Integer.parseInt(lineVals[3]);
-				Door door = new Door(rooms.get(r1), rooms.get(r2));
+                rooms.add(room);
+                maze.addRoom(room);
+            } else if (lineVals[0].equals("door")) {
+                int r1 = Integer.parseInt(lineVals[2]);
+                int r2 = Integer.parseInt(lineVals[3]);
+                Door door = new Door(rooms.get(r1), rooms.get(r2));
 
-				door.setOpen(lineVals[4].equals("open"));
-				doors.add(door);
-			}
-		}
-		s.close();
+                door.setOpen(lineVals[4].equals("open"));
+                doors.add(door);
+            }
+        }
+        s.close();
 
-		Direction[] directions = { Direction.North, Direction.South, Direction.East, Direction.West };
+        Direction[] directions = { Direction.North, Direction.South, Direction.East, Direction.West };
 
-		for (int roomId = 0; roomId < rooms.size(); roomId++) {
-			Room room = rooms.get(roomId);
-			String[] roomConf = roomConfigs.get(roomId);
+        for (int roomId = 0; roomId < rooms.size(); roomId++) {
+            Room room = rooms.get(roomId);
+            String[] roomConf = roomConfigs.get(roomId);
 
-			String conf;
-			MapSite site;
-			for (int confId = 2; confId < 6; confId++) {
-				conf = roomConf[confId];
+            String conf;
+            MapSite site;
+            for (int confId = 2; confId < 6; confId++) {
+                conf = roomConf[confId];
 
-				if (conf.equals("wall")) { // if the room has a wall
-					site = new Wall();
-				} else if (conf.startsWith("d")) { // if the room has a door
-					site = doors.get(Integer.parseInt(conf.substring(1)));
-				} else { // two rooms are connected
-					site = rooms.get(Integer.parseInt(conf));
-				}
+                if (conf.equals("wall")) { // if the room has a wall
+                    site = new Wall();
+                } else if (conf.startsWith("d")) { // if the room has a door
+                    site = doors.get(Integer.parseInt(conf.substring(1)));
+                } else { // two rooms are connected
+                    site = rooms.get(Integer.parseInt(conf));
+                }
 
-				// set the new side
-				room.setSide(directions[confId - 2], site);
-			}
-		}
-		return maze;
-	}
+                // set the new side
+                room.setSide(directions[confId - 2], site);
+            }
+        }
+        maze.setCurrentRoom(0);
 
-	public static void main(String[] args) {
-		if (args.length > 1) {
-			System.err.printf("Usage: %s [maze file]", args[0]);
-			System.exit(1);
-		}
+        return maze;
+    }
 
-		Maze maze = null;
-		SimpleMazeGame simpleMaze = new SimpleMazeGame();
-		if (args.length == 1) {
-			maze = simpleMaze.loadMaze(args[0]);
-		} else {
-			maze = simpleMaze.createMaze();
-		}
-		MazeViewer viewer = new MazeViewer(maze);
-		viewer.run();
-	}
+    public static void main(String[] args) {
+        if (args.length > 1) {
+            System.err.printf("Usage: %s [maze file]", args[0]);
+            System.exit(1);
+        }
+
+        Maze maze;
+        SimpleMazeGame simpleMaze = new SimpleMazeGame();
+        if (args.length == 1) {
+            maze = simpleMaze.loadMaze(args[0]);
+        } else {
+            maze = simpleMaze.createMaze();
+        }
+        MazeViewer viewer = new MazeViewer(maze);
+        viewer.run();
+    }
 }
