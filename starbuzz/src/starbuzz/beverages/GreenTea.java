@@ -1,5 +1,15 @@
 package starbuzz.beverages;
 
-public class GreenTea {
+import starbuzz.interfaces.TeaBeverage;
+
+public class GreenTea extends TeaBeverage {
+
+    public GreenTea() {
+        super("Green Tea");
+    }
+
+    public double cost() {
+        return 1.0;
+    }
 
 }
