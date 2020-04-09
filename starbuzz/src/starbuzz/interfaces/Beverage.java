@@ -1,20 +1,30 @@
 package starbuzz.interfaces;
 
-public interface Beverage {
+public abstract class Beverage {
 
-    /**
-     * @return the beverage description.
-     */
-    public abstract String getDescription();
+    private String description;
 
-    /**
-     * @return the cost of the beverage.
-     */
-    public abstract double getCost();
+    public Beverage(String description) {
+        this.description = description;
+    }
 
     /**
      * @return recipe instructions.
      */
-    public abstract String prepare();
+    public String prepare() {
+        return "\t" + getDescription() + "\n\t";
+    }
+
+    /**
+     * @return the beverage description.
+     */
+    protected String getDescription() {
+        return description;
+    }
+
+    /**
+     * @return the cost of the beverage.
+     */
+    public abstract double cost();
 
 }

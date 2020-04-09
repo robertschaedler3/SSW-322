@@ -1,20 +1,24 @@
 package starbuzz.interfaces;
 
-public abstract class Ingredient implements Beverage {
+public abstract class Ingredient extends Beverage {
 
-    /**
-     * @return the beverage description.
-     */
-    public abstract String getDescription();
+    protected Beverage drink;
 
-    /**
-     * @return the cost of the beverage.
-     */
-    public abstract double getCost();
+    public Ingredient(Beverage beverage, String descripton) {
+        super(descripton);
+        this.drink = beverage;
+    }
 
     /**
      * @return recipe instructions.
      */
-    public abstract String prepare();
+    public String prepare() {
+        return this.drink.prepare() + " \tadd " + this.getDescription() + "\n\t";
+    }
+
+    /**
+     * @return the cost of the beverage.
+     */
+    public abstract double cost();
 
 }
