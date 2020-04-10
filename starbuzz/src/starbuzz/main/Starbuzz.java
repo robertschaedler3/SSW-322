@@ -1,12 +1,18 @@
 package starbuzz.main;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import starbuzz.beverages.*;
 import starbuzz.ingredients.*;
 import starbuzz.interfaces.*;
 
 public class Starbuzz {
+
+    public static Set<String> coffeeIngredients = new HashSet<>(Arrays.asList("milk", "chocolate", "whipcream"));
+    public static Set<String> teaIngredients = new HashSet<>(Arrays.asList("jasmine", "ginger", "milk"));
 
     private static Beverage createBeverage(String[] order) {
         Beverage drink;
@@ -15,7 +21,11 @@ public class Starbuzz {
                 drink = addCoffeeIngredients(order, new Espresso(), 1);
                 break;
             case "decaf":
-                drink = addCoffeeIngredients(order, decafBeverage(order), 2);
+                if (order.length >= 2 && !coffeeIngredients.contains(order[1])) {
+                    drink = addCoffeeIngredients(order, decafBeverage(order), 2);
+                } else {
+                    drink = addCoffeeIngredients(order, new Decaf(), 1);
+                }
                 break;
             case "houseblend":
                 drink = addCoffeeIngredients(order, new HouseBlend(), 1);
@@ -31,12 +41,12 @@ public class Starbuzz {
                 break;
             case "tea":
                 if (order.length > 1) {
-                    drink = addTeaIngredients(order, new Milk(new RedTea()), 2);
+                    drink = addTeaIngredients(order, new Milk(new RedTea()));
+                    break;
                 } else {
                     throw new IllegalArgumentException("Invalid beverage type.");
                 }
-                break;
-            default: // if no coffee beverage was found assume tea beverage
+            default:
                 drink = teaBeverage(order);
         }
         return drink;
@@ -50,19 +60,19 @@ public class Starbuzz {
         Beverage drink;
         switch (order[0].toLowerCase()) {
             case "green":
-                drink = addTeaIngredients(order, new GreenTea(), 2);
+                drink = addTeaIngredients(order, new GreenTea());
                 break;
             case "red":
-                drink = addTeaIngredients(order, new RedTea(), 2);
+                drink = addTeaIngredients(order, new RedTea());
                 break;
             case "white":
-                drink = addTeaIngredients(order, new WhiteTea(), 2);
+                drink = addTeaIngredients(order, new WhiteTea());
                 break;
             case "flower":
-                drink = addTeaIngredients(order, new Jasmine(new GreenTea()), 2);
+                drink = addTeaIngredients(order, new Jasmine(new GreenTea()));
                 break;
             case "ginger":
-                drink = addTeaIngredients(order, new Ginger(new GreenTea()), 2);
+                drink = addTeaIngredients(order, new Ginger(new GreenTea()));
                 break;
             default:
                 throw new IllegalArgumentException("Invlaid order.");
@@ -71,10 +81,6 @@ public class Starbuzz {
     }
 
     private static Beverage decafBeverage(String[] order) {
-        if (order.length < 2) {
-            return new Decaf();
-        }
-
         Beverage drink;
         switch (order[1].toLowerCase()) {
             case "mocha":
@@ -87,7 +93,7 @@ public class Starbuzz {
                 drink = new WhipCream(new Decaf());
                 break;
             default:
-                throw new IllegalArgumentException("Invalid decaf beverage.");
+                throw new IllegalArgumentException("Invalid order.");
         }
         return drink;
     }
@@ -111,8 +117,12 @@ public class Starbuzz {
         return drink;
     }
 
-    private static Beverage addTeaIngredients(String[] order, Beverage drink, int orderIndex) {
-        for (; orderIndex < order.length; orderIndex++) {
+    private static Beverage addTeaIngredients(String[] order, Beverage drink) {
+        if (!order[1].equals("tea")) {
+            throw new IllegalArgumentException("Invalid tea beverage.");
+        }
+
+        for (int orderIndex = 2; orderIndex < order.length; orderIndex++) {
             switch (order[orderIndex].toLowerCase()) {
                 case "ginger":
                     drink = new Ginger(drink);
