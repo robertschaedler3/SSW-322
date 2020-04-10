@@ -2,7 +2,7 @@ package starbuzz.interfaces;
 
 public abstract class Beverage {
 
-    private String description;
+    protected String description;
 
     public Beverage(String description) {
         this.description = description;
@@ -18,7 +18,7 @@ public abstract class Beverage {
     /**
      * @return the beverage description.
      */
-    protected String getDescription() {
+    public String getDescription() {
         return description;
     }
 

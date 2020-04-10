@@ -17,6 +17,13 @@ public abstract class Ingredient extends Beverage {
     }
 
     /**
+     * @return the beverage description.
+     */
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    /**
      * @return the cost of the beverage.
      */
     public abstract double cost();
