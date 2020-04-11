@@ -9,7 +9,7 @@ public class Espresso extends CoffeeBeverage {
     }
 
     public double cost() {
-        return 0.5;
+        return 1.0;
     }
 
 }
