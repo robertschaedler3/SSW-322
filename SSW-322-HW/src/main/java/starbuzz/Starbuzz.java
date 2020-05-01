@@ -1,4 +1,4 @@
-package starbuzz.main;
+package starbuzz;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
