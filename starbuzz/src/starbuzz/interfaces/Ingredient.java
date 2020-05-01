@@ -5,7 +5,7 @@ public abstract class Ingredient extends Beverage {
     protected Beverage drink;
 
     public Ingredient(Beverage beverage, String descripton) {
-        super(descripton);
+        super(descripton, beverage.size);
         this.drink = beverage;
     }
 

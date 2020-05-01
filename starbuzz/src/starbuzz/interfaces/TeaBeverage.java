@@ -2,8 +2,8 @@ package starbuzz.interfaces;
 
 public abstract class TeaBeverage extends Beverage {
 
-    public TeaBeverage(String description) {
-        super(description);
+    public TeaBeverage(String description, Size type) {
+        super(description, new TeaSizeFactor(type));
     }
 
     /**

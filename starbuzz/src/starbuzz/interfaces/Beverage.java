@@ -3,9 +3,16 @@ package starbuzz.interfaces;
 public abstract class Beverage {
 
     protected String description;
+    protected SizeFactor size;
 
-    public Beverage(String description) {
+    // public Beverage(String description) {
+    // this.description = description;
+    // this.size =
+    // }
+
+    public Beverage(String description, SizeFactor size) {
         this.description = description;
+        this.size = size;
     }
 
     /**

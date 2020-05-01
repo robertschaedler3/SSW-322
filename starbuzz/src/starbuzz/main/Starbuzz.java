@@ -16,32 +16,41 @@ public class Starbuzz {
 
     private static Beverage createBeverage(String[] order) {
         Beverage drink;
+        Size type;
         switch (order[0].toLowerCase()) {
             case "espresso":
-                drink = addCoffeeIngredients(order, new Espresso(), 1);
-                break;
-            case "decaf":
-                if (order.length >= 2 && !coffeeIngredients.contains(order[1])) {
-                    drink = addCoffeeIngredients(order, decafBeverage(order), 2);
-                } else {
-                    drink = addCoffeeIngredients(order, new Decaf(), 1);
-                }
+                type = getSize(order, 1);
+                drink = addCoffeeIngredients(order, new Espresso(type), 2);
                 break;
             case "houseblend":
-                drink = addCoffeeIngredients(order, new HouseBlend(), 1);
+                type = getSize(order, 1);
+                drink = addCoffeeIngredients(order, new HouseBlend(type), 2);
                 break;
             case "mocha":
-                drink = addCoffeeIngredients(order, new Chocolate(new Espresso()), 1);
+                type = getSize(order, 1);
+                drink = addCoffeeIngredients(order, new Chocolate(new Espresso(type)), 2);
                 break;
             case "latte":
-                drink = addCoffeeIngredients(order, new Milk(new Espresso()), 1);
+                type = getSize(order, 1);
+                drink = addCoffeeIngredients(order, new Milk(new Espresso(type)), 2);
                 break;
             case "cappucino":
-                drink = addCoffeeIngredients(order, new WhipCream(new Espresso()), 1);
+                type = getSize(order, 1);
+                drink = addCoffeeIngredients(order, new WhipCream(new Espresso(type)), 2);
+                break;
+            case "decaf":
+                if (order.length >= 3 && !coffeeIngredients.contains(order[2])) {
+                    type = getSize(order, 2);
+                    drink = addCoffeeIngredients(order, decafBeverage(order), 3);
+                } else {
+                    type = getSize(order, 1);
+                    drink = addCoffeeIngredients(order, new Decaf(type), 2);
+                }
                 break;
             case "tea":
-                if (order.length > 1) {
-                    drink = addTeaIngredients(order, new Milk(new RedTea()));
+                if (order.length >= 3 && order[1].equals("latte")) {
+                    type = getSize(order, 2);
+                    drink = addTeaIngredients(order, new Milk(new RedTea(type)));
                     break;
                 } else {
                     throw new IllegalArgumentException("Invalid beverage type.");
@@ -53,44 +62,46 @@ public class Starbuzz {
     }
 
     private static Beverage teaBeverage(String[] order) {
-        if (order.length < 2) {
+        if (order.length < 3) {
             throw new IllegalArgumentException("Invalid order.");
         }
 
         Beverage drink;
+        Size type = getSize(order, 2);
         switch (order[0].toLowerCase()) {
             case "green":
-                drink = addTeaIngredients(order, new GreenTea());
+                drink = addTeaIngredients(order, new GreenTea(type));
                 break;
             case "red":
-                drink = addTeaIngredients(order, new RedTea());
+                drink = addTeaIngredients(order, new RedTea(type));
                 break;
             case "white":
-                drink = addTeaIngredients(order, new WhiteTea());
+                drink = addTeaIngredients(order, new WhiteTea(type));
                 break;
             case "flower":
-                drink = addTeaIngredients(order, new Jasmine(new GreenTea()));
+                drink = addTeaIngredients(order, new Jasmine(new GreenTea(type)));
                 break;
             case "ginger":
-                drink = addTeaIngredients(order, new Ginger(new GreenTea()));
+                drink = addTeaIngredients(order, new Ginger(new GreenTea(type)));
                 break;
             default:
-                throw new IllegalArgumentException("Invlaid order.");
+                throw new IllegalArgumentException("Invalid order.");
         }
         return drink;
     }
 
     private static Beverage decafBeverage(String[] order) {
-        Beverage drink;
+        Size type = getSize(order, 2);
+        Beverage drink = new Decaf(type);
         switch (order[1].toLowerCase()) {
             case "mocha":
-                drink = new Chocolate(new Decaf());
+                drink = new Chocolate(drink);
                 break;
             case "latte":
-                drink = new Milk(new Decaf());
+                drink = new Milk(drink);
                 break;
             case "cappucino":
-                drink = new WhipCream(new Decaf());
+                drink = new WhipCream(drink);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid order.");
@@ -122,7 +133,7 @@ public class Starbuzz {
             throw new IllegalArgumentException("Invalid tea beverage.");
         }
 
-        for (int orderIndex = 2; orderIndex < order.length; orderIndex++) {
+        for (int orderIndex = 3; orderIndex < order.length; orderIndex++) {
             switch (order[orderIndex].toLowerCase()) {
                 case "ginger":
                     drink = new Ginger(drink);
@@ -140,10 +151,23 @@ public class Starbuzz {
         return drink;
     }
 
+    private static Size getSize(String[] order, int index) {
+        switch (order[index].toLowerCase()) {
+            case "small":
+                return Size.SMALL;
+            case "medium":
+                return Size.MEDIUM;
+            case "large":
+                return Size.LARGE;
+            default:
+                throw new IllegalArgumentException("Invalid size given.");
+        }
+    }
+
     public static void main(String order[]) {
 
-        if (order.length < 1) {
-            System.err.println("\nUsage: <beverage name> [<ingredient 1, ingredient 2, ingredient 3>]");
+        if (order.length < 2) {
+            System.err.println("\nUsage: <beverage name> <size> [<ingredient 1, ingredient 2, ingredient 3>]");
             System.exit(1);
         }
 
